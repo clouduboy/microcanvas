@@ -14,7 +14,10 @@
     window.addEventListener('keydown', e => {
       if (e.key==='ArrowLeft') ctx.$buttons.left = true;
       if (e.key==='ArrowRight') ctx.$buttons.right = true;
-      if (e.key==='ArrowUp') ctx.$buttons.up = true;
+      if (e.key==='ArrowUp') ctx.$buttons.up = true
+
+;
+
       if (e.key==='ArrowDown') ctx.$buttons.down = true;
       if (e.key===' ') ctx.$buttons.A = true;
       if (e.key==='Enter') ctx.$buttons.B = true;
@@ -55,7 +58,7 @@
   MCP.clear = function() {
     this.clearRect(0, 0, this.width, this.height);
   };
-  MCP.eraseImage = function(...args) {
+  MCP.eraseImage = MCP.clearImage = function(...args) {
     // Learn more of composites:
     // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
     let prevComp = this.globalCompositeOperation;
