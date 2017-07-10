@@ -4,28 +4,44 @@ let game = new MicroCanvas();
 
 let gfxBats;
 
+let x, y;
+let sx = 1, sy = 1;
+
+let animationSpeed;
+let cSprite;
+
+
+// Load bat sprite & initialize animation
 game.setup(function(game) {
   gfxBats = game.loadSprite(`
-    PROGMEM const unsigned char bats[] = { /*16x8x2*/
-      0x01, 0x0f, 0x0e, 0x1c, 0x38, 0x3c, 0x1b, 0x3e,
-      0x3e, 0x1b, 0x3c, 0x38, 0x1c, 0x0e, 0x0f, 0x01,
-      0x1c, 0x0e, 0x0c, 0x07, 0x0e, 0x0c, 0x1b, 0x3e,
-      0x3e, 0x1b, 0x0c, 0x0e, 0x07, 0x0c, 0x0e, 0x1c
-    };`);
+    ! bats 16x6x2
+    ##....#..#....##
+    .##...####...##.
+    .###.#.##.#.###.
+    .##############.
+    ...##########...
+    ....##.##.##....
+    ...#..#..#..#...
+    .#.##.####.##.#.
+    ######.##.######
+    ###.########.###
+    #.....####.....#
+    .......##.......
+  `);
+
+  // Start in the left-side center of the screen
+  x = 0;
+  y = (game.height-gfxBats.height)/2;
+
+  // Animation speed of bat wing flaps (in frames)
+  animationSpeed = 8;
+
+  // Helper variable for flapping animation
+  cSprite = 0;
 });
 
 
-
-let x = 0, y = 24;
-let sx = 1, sy = 1;
-
-let animationSpeed = 8;
-let cSprite = 0;
-
 game.loop(function() {
-  // pause render until it's time for the next frame
-  // automatically // if (!(arduboy.nextFrame())) return;
-
   // Update flapping animation
   if (game.everyXFrames(animationSpeed)) {
     cSprite = !cSprite;
@@ -35,32 +51,25 @@ game.loop(function() {
   x += sx;
   y += sy;
 
-  if (x>108 || x<1) sx = -sx;
-  if (y>56 || y<1) sy = -sy;
+  // Constrain bat inside screen bounds
+  if (x >= (game.width-gfxBats.width-1) || x<1) sx = -sx;
+  if (y >= (game.height-gfxBats.height-1) || y<1) sy = -sy;
 
 
   // Clear display, redraw background text
   game.clear();
-  //arduboy.setCursor(0,0);
-  //arduboy.print("Sprite\nDemo");
+
+  // Draw some background text
   game.drawText("Sprite\nDemo", 0,0, 3);
 
   // Draw shadow (unset pixels on screen based on the bitmap)
-  // TODO:
+  // TODO: platform support outside of Arduboy (JS canvas, Tiny Arcade)
   game.eraseImage(gfxBats[cSprite|0], 0 +x,2 +y);
   game.eraseImage(gfxBats[cSprite|0], 2 +x,2 +y);
 
   // Draw Bat
   game.drawImage(gfxBats[cSprite|0], 1 +x,1 +y);
-
-  // Draw Bat Sprite
-  //game.drawImage(sprite[cSprite+0], 107 -x,55 -y);
-
-//  game.drawImage(game.gfont[65], 60,30 ,10,14);
-//  game.drawImage(game.gfont[66], 72,30 ,10,14);
-
-  // Update Screen
-  // automatically? // arduboy.display();
 });
+
 
 console.log("MicroCanvas initialized");
