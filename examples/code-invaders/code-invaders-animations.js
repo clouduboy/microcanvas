@@ -21,7 +21,7 @@ let turretAnimation = 0;
 // Initialize game
 game.setup(function(game) {
   // Set up graphics
-  gfxInvader = game.loadSprite(`! invader 9x8
+  gfxInvader = game.loadSprite(`! invader 9x8x2
     .........
     ..#...#..
     ...#.#...
@@ -29,8 +29,17 @@ game.setup(function(game) {
     ##.###.##
     #########
     #.#.#.#.#
+    ..#...#..
+
     .........
-  `);
+    ..#...#..
+    ...#.#...
+    .#######.
+    ##.###.##
+    #########
+    #.#...#.#
+    ...#.#..
+`);
 
   gfxInvader2 = game.loadSprite(`! gfx_invader_2 9x8
     ....#....
@@ -125,38 +134,40 @@ game.loop(function() {
       turretX = game.width-gfxDefender.width/2;
     }
 
-    draw();
+    playgame();
   } else {
-    if (turretAnimation < game.height-8) {
-      // Draw defender
-      game.drawImage(gfxDefender , turretX-5, game.height-8-turretAnimation);
-
-      if (turretAnimation === 0) turretAnimation = 1; else turretAnimation*=turretAnimation;
-    }
+    endgame()
   }
 
 });
 
+function defeat() {
+  game.fillStyle = "white";
+  game.centerText(game.width/2, game.height/2, `OH NO!`);
+}
 
+function endgame() {
+  if (!defender_win_animation_start) defender_win_animation_start = game.frameCount;
+  if (defender_win_animation_remaining() > 0) {
+    let turretY = defender_win_animation()
+    game.drawImage(gfxDefender , turretX-5, turretY);
+  }
+
+  game.fillStyle = "white";
+  game.centerText(game.width/2, game.height/2, `HUMANITY PREVAILS!`);
+  // same as: game.drawText(game.width/2 -game.measureText(`…`).width/2, game.height/2 -game.measureText(`…`).height/2, `…`);
+  // game.measureText(`Humanity prevails!`).width ~> `…`.length*5
+}
 
 let invaderAnimation = 1;
 let invaderX = 0;
 
-function draw() {
+function playgame() {
   game.clear()
 
 
   // Animate invaders
-  if ( game.everyXFrames(10) ) {
-    invaderX = invaderX + invaderAnimation;
-
-    if (invaderX >= 6) {
-      invaderAnimation = -1;
-    }
-    if (invaderX <= 0) {
-      invaderAnimation = 1;
-    }
-  }
+  invaderX = invader_animation()
 
 
   // Draw invaders
@@ -173,9 +184,9 @@ function draw() {
       if (invaders[x+8*y]) {
         // Move different rows of invaders differently
         if (y % 2) {
-          game.drawImage(gfxInvader, startX + (invaderX-3) + x*(gfxInvader.width+4), y*(gfxInvader.height+1));
+          game.drawImage(gfxInvader[invaderX>>1&1], startX + (invaderX-3) + x*(gfxInvader.width+4), y*(gfxInvader.height+1));
 
-          if (rocketY >=3 && game.detectCollision(gfxInvader, startX + (invaderX-3) + x*(gfxInvader.width+4), y*(gfxInvader.height+1), gfxRocket, rocketX, rocketY)) {
+          if (rocketY >=3 && game.detectCollision(gfxInvader[invaderX>>1&1], startX + (invaderX-3) + x*(gfxInvader.width+4), y*(gfxInvader.height+1), gfxRocket, rocketX, rocketY)) {
             invaders[x+8*y] = 0;
             totalInvaders--;
             rocketY = 0;
@@ -211,3 +222,75 @@ function draw() {
 
 
 console.log("MicroCanvas initialized: HCFDemo");
+
+/*
+animate([{uint:0}, {uint:6}, {uint:0}], {
+  duration: 2000,
+  id: 'invader_animation',
+  easing: 'linear',
+  iterations: Infinity // TODO: remove second stop and implement direction:alternate
+})
+*/
+function invader_animation() {
+  const t = game.frameCount%120
+  // a period of 120 (duration)
+  // TODO: add invader_animation_start?
+  // (note: frame count overflow issues? 16.6 minutes overflow period is FINE)
+  let x
+
+  // first stop
+  if (t < 60) {
+    // add rounding to first decimal
+    x = ( 0+((6-0)*(t-0)*10/60+5)/10 )|0
+    // TODO: bad rounding when result is negative (rounds only towards zero)
+
+  // second stop
+} else if (t < 120) {
+    x = ( 6+((0-6)*(t-60)*10/60+5)/10 )|0
+  }
+
+  //console.log(t,x)
+  return x
+}
+
+/*
+animate([{uint:game.height-8}, {uint:0}], {
+  duration: 1000,
+  id: 'defender_win_animation',
+  easing: 'cubic-in', //same as "cubic-bezier(0.550, 0.055, 0.675, 0.190)"
+  iterations: 1
+})
+*/
+const defender_win_animation_duration = 60
+let defender_win_animation_start = 0
+function defender_win_animation() {
+  const t = Math.min(game.frameCount-defender_win_animation_start, defender_win_animation_duration)
+  // MIN(currentframe-startframe, duration) - capped at "duration"
+
+  // first stop
+  const x = ((easeCubicIn(null, t, 10*(game.height-8), -10*(game.height-8), defender_win_animation_duration)+5)/10)|0
+  //rounded easeCubicIn(null, t, game.height-8, -(game.height-8), duration)
+
+  return x
+}
+function defender_win_animation_remaining() {
+  return Math.max(60 - (game.frameCount-defender_win_animation_start))
+}
+
+// t: current time, b: beginning value, c: change in value, d: duration
+function easeCubicIn(x, t, b, c, d) {
+  return c*(t/=d)*t*t + b;
+}
+
+/*
+animate([
+  { uint: 0 }, // offset: 0
+  { uint: 0, game.frameRate*6 }, // x seconds in still zero (leeway)
+  { uint: game.height-game.frameRate*10 }
+], {
+  duration: 1000,
+  id: 'game_timer_animation',
+  easing: 'cubic-in', //same as "cubic-bezier(0.550, 0.055, 0.675, 0.190)"
+  iterations: 1
+})
+*/
