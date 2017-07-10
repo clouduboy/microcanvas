@@ -14,10 +14,7 @@
     window.addEventListener('keydown', e => {
       if (e.key==='ArrowLeft') ctx.$buttons.left = true;
       if (e.key==='ArrowRight') ctx.$buttons.right = true;
-      if (e.key==='ArrowUp') ctx.$buttons.up = true
-
-;
-
+      if (e.key==='ArrowUp') ctx.$buttons.up = true;
       if (e.key==='ArrowDown') ctx.$buttons.down = true;
       if (e.key===' ') ctx.$buttons.A = true;
       if (e.key==='Enter') ctx.$buttons.B = true;
@@ -176,7 +173,27 @@
       }
     }).bind(this);
   };
+  // Async state fragment (generator function) runner
+  MCP.run = function(gen) {
+    if (!this.$state || this.$state instanceof gen === false) this.$state = gen();
 
+    if (this.$delay && this.$delay > 0) {
+       --this.$delay;
+    } else {
+      let c = this.$state.next();
+
+      if (c.done) {
+        this.$state = null;
+
+        // state finished
+        return true;
+      } else {
+        this.$delay = c.value -1;
+      }
+    }
+
+    return;
+  }
 
 
   function loadBitmap(bmp) {
