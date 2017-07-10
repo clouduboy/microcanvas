@@ -1,6 +1,8 @@
 'use strict';
 
 (function() {
+  const VERSION = '0.1.0'
+
   function MicroCanvas(ctx) {
     ctx = ctx || document.querySelector('canvas.microcanvas').getContext('2d');
     ctx.width = ctx.canvas.width;
@@ -92,13 +94,16 @@
       }
 
 
-      console.log(e)
+      //console.log(e)
+      e.preventDefault()
     })
 
     // default fillStyle
     ctx.fillStyle = "white";
 
     let mc = Object.assign(ctx, MicroCanvas.prototype);
+    Object.defineProperty(mc, 'VERSION', { value: VERSION });
+
     return mc;
   }
 
