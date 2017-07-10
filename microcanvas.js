@@ -135,7 +135,33 @@
       this.drawImage(...args);
     this.globalCompositeOperation = prevComp;
   };
+  MCP.measureText = function (text) {
+    // TODO: multiline? different "size" & "gfont" handling?
+    return ({
+      width: Math.max( text.length*(game.gfont[0].width+1)-1, 0),
+      height: game.gfont[0].height
+    });
+  }
+  MCP.fillText = function (x, y, text) {
+    return this.drawText(text, x, y)
+  }
+  MCP.centerText = function (x, y, text) {
+    const { width, height } = this.measureText(text)
+    return this.drawText(text, x-width/2|0, y-height/2|0)
+  }
   MCP.drawText = function (text, x, y, size) {
+    if (size) {
+      console.warn('[!] The "size" parameter is deprecated - use the ".fillStyle" property!');
+      // TODO: fillStyle handling
+    }
+    //ctx.fillText-compatible usage
+    if (typeof text == 'number' && typeof y == 'string') {
+      let actualText = y;
+      y = x;
+      x = text;
+      text = actualText;
+    }
+
     size = size || 1;
     let c = 0,
       xd = 0,
@@ -146,7 +172,12 @@
         case '\r': break;
         case '\n': y += (h+1)*size; xd = 0; break;
         default:
-          game.drawImage(game.gfont[text.charCodeAt(c)], x + xd*size, y, w*size, h*size);
+          // basic fillStyle handling
+          if (game.fillStyle ==='#000000' || game.fillStyle.indexOf('black')!==-1) {
+            game.clearImage(game.gfont[text.charCodeAt(c)], x + xd*size, y, w*size, h*size);
+          } else {
+            game.drawImage(game.gfont[text.charCodeAt(c)], x + xd*size, y, w*size, h*size);
+          }
           xd += w+1;
       }
       ++c;
@@ -375,7 +406,7 @@
   function setFont(graphicsFont) {
     this.gfont = graphicsFont || loadGraphics(`
 const static unsigned char font[] PROGMEM =
-{ /*5x7x256*/
+{ /*5x8x256*/
     0x00, 0x00, 0x00, 0x00, 0x00,
     0x3E, 0x5B, 0x4F, 0x5B, 0x3E,
     0x3E, 0x6B, 0x4F, 0x6B, 0x3E,
