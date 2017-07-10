@@ -1,0 +1,15 @@
+{
+  "name": "microcanvas",
+  "version": "0.1.0",
+  "description": "Microcontroller-friendly HTML5 Canvas library for easy games creation",
+  "main": "index.js",
+  "repository": "flaki/microcanvas",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Flaki (https://twitter.com/slsoftworks)",
+  "license": "MIT"
+}
