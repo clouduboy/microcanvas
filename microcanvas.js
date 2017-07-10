@@ -75,7 +75,8 @@
         ctx.$buttons.A = true;
       }
 
-      console.log(e)
+      //console.log(e)
+      e.preventDefault()
     })
     window.addEventListener('touchend', e => {
       const eX = Math.floor(e.changedTouches[0].clientX / window.innerWidth * 100);
@@ -252,6 +253,7 @@
   };
   MCP.custom = function (platforms) {
     if ('canvas' in platforms) {
+      const game = this; // alias for the current context
       ( new Function(platforms.canvas) ).call(this);
     }
   };
