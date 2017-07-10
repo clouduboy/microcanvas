@@ -155,11 +155,13 @@
   MCP.detectCollision = function (s1, x1,y1, s2, x2,y2, precise=true) {
     let result = false;
 
-    this.save();
+    if (this.DEBUG) {
+      this.save();
 
-    this.strokeStyle = "rgba(0,200,0,.3)";
-    this.strokeRect(x1 +.5,y1 +.5, s1.width -1,s1.height -1);
-    this.strokeRect(x2 +.5,y2 +.5, s2.width -1,s2.height -1);
+      this.strokeStyle = "rgba(0,200,0,.3)";
+      this.strokeRect(x1 +.5,y1 +.5, s1.width -1,s1.height -1);
+      this.strokeRect(x2 +.5,y2 +.5, s2.width -1,s2.height -1);
+    }
 
     // Basic collision rectangle
     let cx = x1>x2 ? x1 : x2;
@@ -169,8 +171,11 @@
     let ch = y1>y2 ? y2+s2.height-y1 : y1+s1.height-y2;
 
     if (cw>0 && ch>0) {
-      this.fillStyle = "rgba(200,0,0,.5)";
-      this.fillRect(cx,cy, cw,ch);
+      if (this.DEBUG) {
+        this.fillStyle = "rgba(200,0,0,.5)";
+        this.fillRect(cx,cy, cw,ch);
+      }
+
       result = true;
     }
 
@@ -187,22 +192,24 @@
     let id1 = s1.context.getImageData(x1>x2 ? 0 : x2-x1, y1>y2 ? 0 : y2-y1, cw,ch);
     let id2 = s2.context.getImageData(x1<x2 ? 0 : x1-x2, y1<y2 ? 0 : y1-y2, cw,ch);
 
-    //console.log(id1bpp,id1);
-    //console.log(id2bpp,id2);
-
-    this.fillStyle = "yellow";
-
     let collisions = 0;
     for (let i=0; i<id1.data.length; i+=4) {
       if (
         id1.data[i] > 0 && id2.data[i] > 0 // monochrome test
       ) {
+        if (this.DEBUG) {
+          this.fillStyle = "yellow";
+          this.fillRect(cx + (i/4)%cw,cy + (i/4/cw)|0, 1,1);
+        }
+
         ++collisions;
-        this.fillRect(cx + (i/4)%cw,cy + (i/4/cw)|0, 1,1);
       }
     }
 
-    this.restore();
+    if (this.DEBUG) {
+      this.restore();
+    }
+
     return (collisions>0);
   };
   MCP.buttonPressed = function(button) {
