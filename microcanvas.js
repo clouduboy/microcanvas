@@ -267,7 +267,15 @@
 
     cb(this);
 
-    setTimeout( _ => { this.loopCallback(); }, 0);
+    setTimeout( _ => {
+      if (!this.LOOP) this.loopCallback();
+      this.LOOP = true
+    }, 0);
+
+    // Convenience function for resetting the game
+    this.reset = function() {
+      this.setup(cb, fps);
+    }
   };
   MCP.loop = function(cb) {
     this.loopCallback = (function() {
