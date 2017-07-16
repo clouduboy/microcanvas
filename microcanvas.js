@@ -146,8 +146,17 @@
   MCP.fillText = function (x, y, text) {
     return this.drawText(text, x, y)
   }
-  MCP.centerText = function (x, y, text) {
+  MCP.centerText = function (text, x, y) {
+    // Parameters accepted in either "text,x,y" or "x,y,text" order
+    if (typeof text == 'number' && typeof y == 'string') {
+      let actualText = y;
+      y = x;
+      x = text;
+      text = actualText;
+    }
+
     const { width, height } = this.measureText(text)
+
     return this.drawText(text, x-width/2|0, y-height/2|0)
   }
   MCP.drawText = function (text, x, y, size) {
