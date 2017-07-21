@@ -449,7 +449,7 @@ game.loop(function() {
   // Play intro animation
   if (game.state == S_INTRO) {
     // Skip intro animation
-    if (game.buttonPressed("enter")) return gameSetup();
+    if (game.buttonPressed("space")) return gameSetup();
 
     // Run intro animation
     let ended = game.run( gameIntro );
@@ -496,7 +496,7 @@ game.loop(function() {
     let ended = game.run( gameOver );
 
     // Restart game if "enter" (B) was pressed
-    if (game.buttonPressed("enter")) ended=true;
+    if (game.buttonPressed("space")) ended=true;
 
     if (!ended) return;
 
