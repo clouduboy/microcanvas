@@ -202,7 +202,8 @@ game.loop(function() {
     if (game.frameCount - intro_after < 2*game.frameRate) {
       game.drawImage(gfxIntro, game.width/2-64/2, game.height/2-64/2);
     } else {
-	  intro = false;
+	    intro = false;
+      game_timer_animation_start = game.frameCount;
     }
     return;
   }
