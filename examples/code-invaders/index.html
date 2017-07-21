@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <meta http-equiv="Cache-Control" content="no-store" />
     <link rel="stylesheet" href="../style.css">
 
     <title>Code Invaders game demo — MicroCanvas</title>
@@ -17,6 +18,16 @@
     <script src="../../microcanvas.js"></script>
 
 
-    <script src="code-invaders.js"></script>
+    <script>
+    (function() {
+      let s = document.createElement('script')
+      if (window.location.href.indexOf('v=code-invaders-sg.js') >= 0) {
+        s.src = 'code-invaders-sg.js'
+      } else {
+        s.src = 'code-invaders.js'
+      }
+      document.body.appendChild(s)
+    })()
+    </script>
   </body>
 </html>
