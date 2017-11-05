@@ -251,16 +251,16 @@ game.setup(function(game) {
 #....
 
 #####
-##..#
-#....
-#....
-##..#
-
 #####
 ##..#
-#.##.
-#.##.
-##..#`);
+##..#
+#####
+
+#####
+#####
+#####
+#####
+#####`);
   gfxNumbers = game.loadSprite(`! num 5x5x12
 .....
 .###.
@@ -277,7 +277,7 @@ game.setup(function(game) {
 .....
 .###.
 ...#.
-.#...
+.##..
 .###.
 
 .....
@@ -295,7 +295,7 @@ game.setup(function(game) {
 .....
 .###.
 .#...
-...#.
+..##.
 .###.
 
 .....
@@ -422,10 +422,10 @@ game.loop(function() {
   let timeDiffS = timeDiff - (timeDiffM * 60);
 
   game.drawImage(gfxNumbers[Math.floor(timeDiffM / 10)], 0, 0);
-  game.drawImage(gfxNumbers[timeDiffM - (Math.floor(timeDiffM / 10) * 10)], 5, 0);
-  game.drawImage(gfxNumbers[10], 10, 0);
-  game.drawImage(gfxNumbers[Math.floor(timeDiffS / 10)], 15, 0);
-  game.drawImage(gfxNumbers[timeDiffS - (Math.floor(timeDiffS / 10) * 10)], 20, 0);
+  game.drawImage(gfxNumbers[timeDiffM - (Math.floor(timeDiffM / 10) * 10)], 4, 0);
+  game.drawImage(gfxNumbers[10], 8, 0);
+  game.drawImage(gfxNumbers[Math.floor(timeDiffS / 10)], 12, 0);
+  game.drawImage(gfxNumbers[timeDiffS - (Math.floor(timeDiffS / 10) * 10)], 16, 0);
 
   for (let i = 0; i < 4; i++) {
     game.drawImage(gfxNumbers[columnInfo0[i]], fieldStartX+(0*spriteSize), fieldStartY-6-(i*spriteSize));
