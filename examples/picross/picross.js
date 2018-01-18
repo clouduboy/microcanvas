@@ -10,7 +10,7 @@ let generate = function (arr, infoArr) {
   let block = 0;
   let blockNum = 3;
   for (let i = 0; i < fieldSize; i++) {
-    arr[i] = game.random(0, 1);
+    arr[i] = game.random(0, 2);
     if (arr[i] == 1) {
       block = block + 1;
     }
