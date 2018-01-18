@@ -383,14 +383,18 @@ game.loop(function() {
         cursorPosY = Math.max(cursorPosY - 1, 0);
         pressed = true;
         if (game.buttonPressed('enter')) {
-          current0 = board0;
-          current1 = board1;
-          current2 = board2;
-          current3 = board3;
-          current4 = board4;
-          current5 = board5;
-          current6 = board6;
-          current7 = board7;
+          let i = 0;
+          while (i<current0.length) {
+            current0[i] = board0[i];
+            current1[i] = board1[i];
+            current2[i] = board2[i];
+            current3[i] = board3[i];
+            current4[i] = board4[i];
+            current5[i] = board5[i];
+            current6[i] = board6[i];
+            current7[i] = board7[i];
+            ++i;
+          }
         }
       }
     }
