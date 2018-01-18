@@ -25,8 +25,8 @@ let generate = function (arr, infoArr) {
   }
 };
 
-let calcColumn = function (x) {
-  let infoArr = [11, 11, 11, 11];
+let calcColumn = function (infoArr, x) {
+  infoArr.fill(11);
   let block = 0;
   let blockNum = 3;
   if (board0[x] == 1) {
@@ -96,7 +96,6 @@ let calcColumn = function (x) {
   if (block > 0) {
   	infoArr[blockNum] = block;
   }
-  return infoArr;
 }
 
 let mark = function (arr, x) {
@@ -208,14 +207,6 @@ let startGame = function () {
   current5 = [0, 0, 0, 0, 0, 0, 0, 0];
   current6 = [0, 0, 0, 0, 0, 0, 0, 0];
   current7 = [0, 0, 0, 0, 0, 0, 0, 0];
-  columnInfo0 = calcColumn(0);
-  columnInfo1 = calcColumn(1);
-  columnInfo2 = calcColumn(2);
-  columnInfo3 = calcColumn(3);
-  columnInfo4 = calcColumn(4);
-  columnInfo5 = calcColumn(5);
-  columnInfo6 = calcColumn(6);
-  columnInfo7 = calcColumn(7);
   generate(board0, rowInfo0);
   generate(board1, rowInfo1);
   generate(board2, rowInfo2);
@@ -224,6 +215,14 @@ let startGame = function () {
   generate(board5, rowInfo5);
   generate(board6, rowInfo6);
   generate(board7, rowInfo7);
+  calcColumn(columnInfo0, 0);
+  calcColumn(columnInfo1, 1);
+  calcColumn(columnInfo2, 2);
+  calcColumn(columnInfo3, 3);
+  calcColumn(columnInfo4, 4);
+  calcColumn(columnInfo5, 5);
+  calcColumn(columnInfo6, 6);
+  calcColumn(columnInfo7, 7);
   gameActive = true;
   resetting = false;
   timeStart = new Date();
