@@ -191,22 +191,22 @@ let checkBoard = function () {
 }
 
 let startGame = function () {
-  rowInfo0 = [11, 11, 11, 11];
-  rowInfo1 = [11, 11, 11, 11];
-  rowInfo2 = [11, 11, 11, 11];
-  rowInfo3 = [11, 11, 11, 11];
-  rowInfo4 = [11, 11, 11, 11];
-  rowInfo5 = [11, 11, 11, 11];
-  rowInfo6 = [11, 11, 11, 11];
-  rowInfo7 = [11, 11, 11, 11];
-  current0 = [0, 0, 0, 0, 0, 0, 0, 0];
-  current1 = [0, 0, 0, 0, 0, 0, 0, 0];
-  current2 = [0, 0, 0, 0, 0, 0, 0, 0];
-  current3 = [0, 0, 0, 0, 0, 0, 0, 0];
-  current4 = [0, 0, 0, 0, 0, 0, 0, 0];
-  current5 = [0, 0, 0, 0, 0, 0, 0, 0];
-  current6 = [0, 0, 0, 0, 0, 0, 0, 0];
-  current7 = [0, 0, 0, 0, 0, 0, 0, 0];
+  rowInfo0.fill(11);
+  rowInfo1.fill(11);
+  rowInfo2.fill(11);
+  rowInfo3.fill(11);
+  rowInfo4.fill(11);
+  rowInfo5.fill(11);
+  rowInfo6.fill(11);
+  rowInfo7.fill(11);
+  current0.fill(0);
+  current1.fill(0);
+  current2.fill(0);
+  current3.fill(0);
+  current4.fill(0);
+  current5.fill(0);
+  current6.fill(0);
+  current7.fill(0);
   generate(board0, rowInfo0);
   generate(board1, rowInfo1);
   generate(board2, rowInfo2);
