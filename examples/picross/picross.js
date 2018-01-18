@@ -5,8 +5,8 @@ let game = new MicroCanvas();
 let fieldSize = 8;
 let spriteSize = 5;
 
-let generate = function (infoArr) {
-  let arr = [0, 0, 0, 0, 0, 0, 0, 0];
+let generate = function (arr, infoArr) {
+  arr.fill(0);
   let block = 0;
   let blockNum = 3;
   for (let i = 0; i < fieldSize; i++) {
@@ -23,7 +23,6 @@ let generate = function (infoArr) {
   if(block > 0) {
   	infoArr[blockNum] = block;
   }
-  return arr;
 };
 
 let calcColumn = function (x) {
@@ -209,14 +208,6 @@ let startGame = function () {
   current5 = [0, 0, 0, 0, 0, 0, 0, 0];
   current6 = [0, 0, 0, 0, 0, 0, 0, 0];
   current7 = [0, 0, 0, 0, 0, 0, 0, 0];
-  board0 = generate(rowInfo0);
-  board1 = generate(rowInfo1);
-  board2 = generate(rowInfo2);
-  board3 = generate(rowInfo3);
-  board4 = generate(rowInfo4);
-  board5 = generate(rowInfo5);
-  board6 = generate(rowInfo6);
-  board7 = generate(rowInfo7);
   columnInfo0 = calcColumn(0);
   columnInfo1 = calcColumn(1);
   columnInfo2 = calcColumn(2);
@@ -225,6 +216,14 @@ let startGame = function () {
   columnInfo5 = calcColumn(5);
   columnInfo6 = calcColumn(6);
   columnInfo7 = calcColumn(7);
+  generate(board0, rowInfo0);
+  generate(board1, rowInfo1);
+  generate(board2, rowInfo2);
+  generate(board3, rowInfo3);
+  generate(board4, rowInfo4);
+  generate(board5, rowInfo5);
+  generate(board6, rowInfo6);
+  generate(board7, rowInfo7);
   gameActive = true;
   resetting = false;
   timeStart = new Date();
