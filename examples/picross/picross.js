@@ -228,7 +228,6 @@ let startGame = function () {
   timeStart = game.frameCount;
 }
 
-game.setup(function(game) {
   gfxWin = game.loadSprite(`! win 13x5
 .............
 .#...#.#.#..#
