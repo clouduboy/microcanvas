@@ -337,7 +337,7 @@ let startGame = function () {
 let drawRow = function (y, arr, infoArr) {
   for (let x = 0; x < fieldSize; x++) {
     let type = arr[x];
-    if (x == cursorPosX && y == cursorPosY) {
+    if (gameActive && x == cursorPosX && y == cursorPosY) {
       type = type + 2;
     }
     for (let i = 0; i < 4; i++) {
