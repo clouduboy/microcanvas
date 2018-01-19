@@ -225,7 +225,7 @@ let startGame = function () {
   calcColumn(columnInfo7, 7);
   gameActive = true;
   resetting = false;
-  timeStart = new Date();
+  timeStart = game.frameCount;
 }
 
 game.setup(function(game) {
@@ -417,11 +417,11 @@ game.loop(function() {
   }
 
   if (gameActive) {
-    timeNow = new Date();
+    timeNow = game.frameCount;
   }
-  let timeDiff = Math.floor((timeNow.getTime() - timeStart.getTime()) / 1000);
-  let timeDiffM = Math.floor(timeDiff / 60);
-  let timeDiffS = timeDiff - (timeDiffM * 60);
+  let timeDiff = timeNow - timeStart;
+  let timeDiffM = Math.floor(timeDiff / 60 / 60);
+  let timeDiffS = Math.floor(timeDiff / 60 ) % 60;
 
   game.drawImage(gfxNumbers[Math.floor(timeDiffM / 10)], 0, 0);
   game.drawImage(gfxNumbers[timeDiffM - (Math.floor(timeDiffM / 10) * 10)], 4, 0);
