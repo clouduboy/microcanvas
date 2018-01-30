@@ -228,6 +228,7 @@ let startGame = function () {
   calcColumn(columnInfo7, 7);
   gameActive = true;
   resetting = false;
+  checkBoardResult = false
   timeStart = game.frameCount;
 }
 
@@ -409,6 +410,7 @@ let drawRow = function (y, arr, infoArr) {
 }
 
 
+var checkBoardResult = false
 game.loop(function() {
 
   // Clear display, redraw background text
@@ -426,7 +428,8 @@ game.loop(function() {
     return;
   }
 
-  if (checkBoard()) {
+
+  if (checkBoardResult) {
     gameActive = false
     game.drawImage(gfxWin[0], 0, 5);
   }
@@ -467,6 +470,7 @@ game.loop(function() {
             current7[i] = board7[i];
             ++i;
           }
+          checkBoardResult = checkBoard()
         }
       }
     }
@@ -475,6 +479,7 @@ game.loop(function() {
         pressed = true;
         if (gameActive) {
           markRow(cursorPosX, cursorPosY);
+          checkBoardResult = checkBoard()
         }
         if (game.buttonPressed('enter')) {
           resetting = true;
