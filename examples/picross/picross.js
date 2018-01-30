@@ -236,7 +236,8 @@ let startGame = function () {
   calcColumn(columnInfo7, 7);
   gameActive = true;
   resetting = false;
-  checkBoardResult = false
+  checkBoardResult = false;
+  showResult = false;
   timeStart = game.frameCount;
   game.custom({
     arduboy: `arduboy.setRGBled(0, 0, 0)`,
@@ -421,7 +422,8 @@ let drawRow = function (y, arr, infoArr) {
 }
 
 
-var checkBoardResult = false
+var checkBoardResult = false;
+var showResult = false;
 game.loop(function() {
 
   // Clear display, redraw background text
@@ -443,9 +445,15 @@ game.loop(function() {
   if (checkBoardResult) {
     gameActive = false
     game.drawImage(gfxWin[0], 0, 5);
-    game.custom({
-      arduboy: `arduboy.setRGBled(0, 180, 0)`,
-    });
+    if(showResult) {
+      game.custom({
+        arduboy: `arduboy.setRGBled(180, 0, 0)`
+      });
+    } else {
+      game.custom({
+        arduboy: `arduboy.setRGBled(0, 180, 0)`
+      });
+    }
   }
 
   if (!resetting && game.everyXFrames(3)) {
@@ -484,7 +492,8 @@ game.loop(function() {
             current7[i] = board7[i];
             ++i;
           }
-          checkBoardResult = checkBoard()
+          showResult = true;
+          checkBoardResult = checkBoard();
         }
       }
     }
