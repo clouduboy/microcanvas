@@ -202,6 +202,14 @@ let startGame = function () {
   rowInfo5.fill(11);
   rowInfo6.fill(11);
   rowInfo7.fill(11);
+  columnInfo0.fill(11);
+  columnInfo1.fill(11);
+  columnInfo2.fill(11);
+  columnInfo3.fill(11);
+  columnInfo4.fill(11);
+  columnInfo5.fill(11);
+  columnInfo6.fill(11);
+  columnInfo7.fill(11);
   current0.fill(0);
   current1.fill(0);
   current2.fill(0);
@@ -230,6 +238,9 @@ let startGame = function () {
   resetting = false;
   checkBoardResult = false
   timeStart = game.frameCount;
+  game.custom({
+    arduboy: `arduboy.setRGBled(0, 0, 0)`,
+  });
 }
 
 game.setup(function() {
@@ -432,6 +443,9 @@ game.loop(function() {
   if (checkBoardResult) {
     gameActive = false
     game.drawImage(gfxWin[0], 0, 5);
+    game.custom({
+      arduboy: `arduboy.setRGBled(0, 180, 0)`,
+    });
   }
 
   if (!resetting && game.everyXFrames(3)) {
