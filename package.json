@@ -1,15 +1,21 @@
 {
   "name": "microcanvas",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Microcontroller-friendly HTML5 Canvas library for easy games creation",
   "main": "index.js",
-  "repository": "flaki/microcanvas",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/clouduboy/microcanvas.git"
+  },
   "directories": {
     "example": "examples"
   },
+  "keywords": [
+    "clouduboy"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Flaki (https://twitter.com/slsoftworks)",
-  "license": "MIT"
+  "author": "István Szmozsánszky 'Flaki' <clouduboy@flaki.hu> (https://clouduboy.org)",
+  "license": "Apache-2.0"
 }
