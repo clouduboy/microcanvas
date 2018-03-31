@@ -23,6 +23,8 @@
       let s = document.createElement('script')
       if (window.location.href.indexOf('v=singapore-js') >= 0) {
         s.src = 'code-invaders-sg.js'
+      } else if (window.location.href.indexOf('v=clouduboy') >= 0) {
+        s.src = 'code-invaders-clouduboy.js'
       } else {
         s.src = 'code-invaders.js'
       }
