@@ -370,7 +370,7 @@ function playgame() {
 
   // Game timer
   game.fillStyle = "white";
-  game.centerText(`${Math.floor((game_timer_animation_remaining()/60))}`, game.width/2, 4);
+  game.centerText(`${Math.floor((game_timer_animation_remaining()/60))}`, game.width/2, 0);
 }
 
 
