@@ -130,25 +130,31 @@ const gfxIntro = game.loadSprite(`
 ..............................................2....222..22..2..2...2...2222.2..2.2..............
 `);
 
+const MAX_ENEMIES = 3;
 
 // Game variables
 let shootTimer = 10;
-const spaceship = {
-    x:0,
-    y:0
-}
+let xSpaceship = 0;
+let ySpaceship = 0;
+
 // Current enemies
-let enemies= [];
+let spriteEnemies = new Array(3);
+let xEnemies = new Array(3);
+let yEnemies = new Array(3);
 
 // BG
-let stars =[];
+let spriteStars = [];
+let xStars = [];
+let yStars = [];
 
 
 // List of possible enemy sprites
 let possibleEnemies = [gfxEnemy1,gfxEnemy2,gfxEnemy3];
 
 // Ingame rockets
-let rockets = [];
+let xRockets = [];
+let yRockets = [];
+let spriteRockets = [];
 
 // User Score
 let score = 0;
@@ -170,25 +176,22 @@ game.setup(() => {
     score = 0;
 
     //setup the spaceship initial position in the canvas
-    spaceship.x = 10;
-    spaceship.y = 32;
+    xSpaceship = 10;
+    ySpaceship = 32;
 
     // Pushing first wave  of enemies (3 enemies at the same time top)
-    enemies.push({
-        sprite:possibleEnemies[Math.floor(Math.random()*3)],
-        x:Math.floor(Math.random()*game.width+ game.width/2),
-        y:Math.floor(Math.random()*game.height)
-    });
-    enemies.push({
-        sprite:possibleEnemies[Math.floor(Math.random()*3)],
-        x:Math.floor(Math.random()*game.width+ game.width/2),
-        y:Math.floor(Math.random()*game.height)
-    });
-    enemies.push({
-        sprite:possibleEnemies[Math.floor(Math.random()*3)],
-        x:Math.floor(Math.random()*game.width+ game.width/2),
-        y:Math.floor(Math.random()*game.height)
-    });
+    spriteEnemies[0]=possibleEnemies[Math.floor(Math.random()*3)];
+    xEnemies[0]=(Math.floor(Math.random()*game.width+ game.width/2));
+    yEnemies[0]=(Math.floor(Math.random()*game.height));
+
+    spriteEnemies[1]=(possibleEnemies[Math.floor(Math.random()*3)]);
+    xEnemies[1]=(Math.floor(Math.random()*game.width+ game.width/2));
+    yEnemies[1]=(Math.floor(Math.random()*game.height));
+
+    spriteEnemies[2]=(possibleEnemies[Math.floor(Math.random()*3)]);
+    xEnemies[2]=(Math.floor(Math.random()*game.width+ game.width/2));
+    yEnemies[2]=(Math.floor(Math.random()*game.height));
+
     // Starting game state
     playing = false;
     inIntro = true;
@@ -199,12 +202,9 @@ game.setup(() => {
 
 function generateStars(amount){
     for(let i =0; i<amount; i++){
-        let newStar = {
-            sprite:gfxStar,
-            x:Math.floor(Math.random()*game.width),
-            y:Math.floor(Math.random()*game.height)
-        }
-        stars.push(newStar);
+        spriteStars.push(gfxStar);
+        xStars.push(Math.floor(Math.random()*game.width));
+        yStars.push(Math.random()*game.height);
     }
 }
 
@@ -236,18 +236,18 @@ game.loop(() => {
     }
     else if(playing){
         shootTimer-= 2;
-        game.drawImage(gfxJsShip, spaceship.x, spaceship.y);
+        game.drawImage(gfxJsShip, xSpaceship, ySpaceship);
 
         // if the spaceship is inside the canvas height viewport handle up and down movements
-        if(spaceship.y > 0 && spaceship.y < game.height){
+        if(ySpaceship > 0 && ySpaceship < game.height){
             if ( game.buttonPressed('up')) {
-                spaceship.y -= 1;
-                if(spaceship.y<= 0)
-                    spaceship.y = 1;
+                ySpaceship -= 1;
+                if(ySpaceship<= 0)
+                    ySpaceship = 1;
             }else if( game.buttonPressed('down') ){
-                spaceship.y += 1;
-                if(spaceship.y>= game.height)
-                    spaceship.y = game.height-1;
+                ySpaceship += 1;
+                if(ySpaceship>= game.height)
+                    ySpaceship = game.height-1;
             }
         }
 
@@ -257,28 +257,29 @@ game.loop(() => {
         }
 
         //check if spaceship crashed
-        enemies.forEach((enemy,idx) => {
+        spriteEnemies.forEach((enemySprite,idx) => {
 
-            let crash = game.detectCollision(gfxJsShip, spaceship.x, spaceship.y, enemy.sprite, enemy.x, enemy.y, true);
+            let crash = game.detectCollision(gfxJsShip, xSpaceship, ySpaceship,enemySprite, xEnemies[idx], yEnemies[idx], true);
             if(crash){
-                const idx = enemies.indexOf(enemy);
-                enemies.splice(idx,1);
+                spriteEnemies.splice(idx,1);
+                xEnemies.splice(idx,1);
+                yEnemies.splice(idx,1);
                 gameOver();
             }
 
-            rockets.forEach((rck)=>{
-                console.log(`Checking rocket: ${rck}`);
+            spriteRockets.forEach((rocketSprite, rckIdx)=>{
 
-                let isDead = game.detectCollision(rck.sprite, rck.x, rck.y, enemy.sprite, enemy.x, enemy.y, true);
+                let isDead = game.detectCollision(rocketSprite, xRockets[rckIdx], yRockets[rckIdx], enemySprite, xEnemies[idx], yEnemies[idx], true);
                 console.log(isDead);
                 if(isDead){
-                    const idx = enemies.indexOf(enemy);
-                    enemies.splice(idx,1);
-                    enemies.push({
-                        sprite:possibleEnemies[Math.floor(Math.random()*3)],
-                        x:game.width,
-                        y:Math.floor(Math.random()*game.height)
-                    });
+                    spriteEnemies.splice(idx,1);
+                    xEnemies.splice(idx,1);
+                    yEnemies.splice(idx,1);
+
+                    spriteEnemies.push(possibleEnemies[Math.floor(Math.random()*3)]);
+                    xEnemies.push(game.width);
+                    yEnemies.push(Math.floor(Math.random()*game.height));    
+
                     score++;
                 }
             })
@@ -296,20 +297,25 @@ game.loop(() => {
 // On spacebar press
 function shoot(){
     console.log(game.height);
-    rockets.push({
-        x: spaceship.x+14,
-        y: spaceship.y+4,
-        sprite: gfxRocket
-    });
-
+    spriteRockets.push(gfxRocket);
+    xRockets.push(xSpaceship+14);
+    yRockets.push(ySpaceship+4);
 }
 
 // Handle game over
 function gameOver(){
     game.clear();
-    enemies = [];
-    rockets =[];
-    stars =[];
+    spriteEnemies = [];
+    xEnemies = [];
+    yEnemies = [];
+
+    spriteRockets =[];
+    xRockets =[];
+    yRockets =[];
+
+    spriteStars =[];
+    xStars =[];
+    yStars =[];
 
     playing = false;
     inScoreScreen = true;
@@ -317,41 +323,44 @@ function gameOver(){
 
 // Update enemies positions
 function updateEnemies(){
-    enemies
-        .forEach((enemy,index)=>{
-            if(enemy.x<=0)
+    spriteEnemies
+        .forEach((enemySprite,index)=>{
+            if(xEnemies[index]<=0)
             {
-                enemy.x = game.width;
-                enemies.splice(index,1);
-                enemies.push({
-                    sprite:possibleEnemies[Math.floor(Math.random()*3)],
-                    x:game.width,
-                    y:Math.floor(Math.random()*game.height)
-                });
+                xEnemies[index] = game.width;
+                spriteEnemies.splice(index,1);
+                xEnemies.splice(index,1);
+                yEnemies.splice(index,1);
+
+                spriteEnemies.push(possibleEnemies[Math.floor(Math.random()*3)]);
+                xEnemies.push(game.width);
+                yEnemies.push(Math.floor(Math.random()*game.height));    
+
             }
-            enemy.x-=1;
-            game.drawImage(enemy.sprite,enemy.x,enemy.y);
+            xEnemies[index]-=1;
+            game.drawImage(enemySprite,xEnemies[index], yEnemies[index]);
         });
 }
 
 // Update enemies positions
 function updateStars(){
-    stars
-        .forEach((star,index)=>{
-            if(star.x<=0)
+    spriteStars
+        .forEach((starSprite,index)=>{
+            if(xStars[index]<=0)
             {
-                star.x = game.width;
-                stars.splice(index,1);
-                stars.push({
-                    sprite:gfxStar,
-                    x:game.width,
-                    y:Math.floor(Math.random()*game.height)
-                });
+                xStars[index] = game.width;
+                spriteStars.splice(index,1);
+                xStars.splice(index,1);
+                yStars.splice(index,1);
+
+                spriteStars.push(gfxStar);
+                xStars.push(game.width);
+                yStars.push(Math.random()*game.height);
             }
             if(starsMovementTimer<=0){
-                star.x-=1
+                xStars[index]-=1
             }
-            game.drawImage(star.sprite,star.x,star.y);
+            game.drawImage(starSprite,xStars[index],yStars[index]);
         });
     if(starsMovementTimer<=0){
         starsMovementTimer=10;
@@ -361,13 +370,15 @@ function updateStars(){
 
 // Update rockets positions
 function updateRockets(){
-    rockets
-        .forEach((rocket,index)=>{
-            if(rocket.x>=game.width)
+    spriteRockets
+        .forEach((rocketSprite,index)=>{
+            if(xRockets[index]>=game.width)
             {
-                rockets.splice(index,1);
+                spriteRockets.splice(index,1);
+                xRockets.splice(index,1);
+                yRockets.splice(index,1);
             }
-            rocket.x+=1;
-            game.drawImage(rocket.sprite,rocket.x,rocket.y);
+            xRockets[index]+=1;
+            game.drawImage(rocketSprite,xRockets[index],yRockets[index]);
         });
 }
