@@ -11,126 +11,25 @@
 
 'use strict';
 
-const game = new MicroCanvas();
+let game = new MicroCanvas();
 
 /**
  Amazing Sprites Section!
  ========================
  **/
 
-const gfxJsShip = game.loadSprite(`
-! node_invaders 16x9@#424242,#8BC34A,#F44336,#c2c3c7
-...###22222.....
-.3####222222....
-...###2222222...
-..3#####222222..
-33#######2222224
-..3#####222222..
-...###2222222...
-.3####222222....
-...###22222.....
-`);
-
-
-// Graphics
-const gfxEnemy1 = game.loadSprite(`
-! sprite 13x9@#ffffff,#254fd6,#E024C6
-..22.........
-.2222........
-22..22......
-22.....3...3.
-22....333.333
-22.....3...3.
-22..22.......
-.2222........
-..22.........
-`);
-
-// Graphics
-const gfxEnemy2 = game.loadSprite(`
-! sprite 14x9@#7bbfff,#254fd6
-..............
-.....#........
-.##..#.....##.
-#..#.###..#..#
-#..#.#..#.#..#
-###..#..#.###.
-#....#..#.#...
-#.........#...
-..............
-`);
-
-const gfxEnemy3= game.loadSprite(`
-! sprite 9x10@#ffffff,#e76f00,#5382a1,#000000
-...2.....
-..2..2...
-.2..2....
-..2..2...
-.....4...
-333333.3.
-........3
-.33333.3.
-.....4...
-..333....
-`);
-
-const gfxEnemy4= game.loadSprite(`
-! ruby 13x9@#ffffff,#e76f00,#5382a1,#000000
-...2.........
-..2..2.......
-.2..2........
-..2..2.......
-.....4.......
-333333.3.....
-........3....
-.33333.3.....
-.....4.......
-`);
-
-
-const gfxRocket = game.loadSprite(`
-! node_invaders 5x1@#424242,#8BC34A,#F44336
-33#######22
-`);
-
-const gfxStar = game.loadSprite(`
-! node_invaders 1x1@#616161,#8BC34A,#F44336
-#
-`);
-
-
-const gfxIntro = game.loadSprite(`
- ! intro 96x27@#c2c3c7,#88c34a,#424242,#f44336
-.....................................................#..........................................
-.....................................................##.........................................
-.....................................................###........................................
-.....................................................####.......................................
-.....................................................####.......................................
-.....................................................####.......................................
-.........................###...........#.............####.......###.............................
-........................#####..........2.............####......#####............................
-.......................#######........222........########.....#######...........................
-......................#########......22222......#########....#########..........................
-.....................#####.#####....2222222....##########...#####.#####.........................
-....................#####...#####..222222222..#####.#####..#####...#####........................
-....................####.....####..222222222..####...####..####......###........................
-....................####.....####..222232222..###.....###..####..22...##........................
-....................####.....####..222333222..###.....###..####..22....#........................
-....................####.....####..222333222..####...####..#####................................
-....................###.......###..333333333..#####.#####...#####...............................
-....................##.........##..333333333...##########....######.............................
-....................#...........#..33.333.33....########......######............................
-....................................3.434.3......######........#####............................
-....................................4..4..4.....................................................
-................................................................................................
-..............................................2222.222..222.2..2.22222.2222.222..2..............
-..............................................2.....2..2....2..2...2...2....2..2.2..............
-..............................................222...2..2.22.2222...2...222..222..2..............
-..............................................2.....2..2..2.2..2...2...2....2.2.................
-..............................................2....222..22..2..2...2...2222.2..2.2..............
-`);
+let gfxJsShip;
+let gfxEnemy1;
+let gfxEnemy2;
+let gfxEnemy3;
+let gfxEnemy4;
+let gfxRocket;
+let gfxStar;
+let gfxIntro;
 
 const MAX_ENEMIES = 3;
+const MAX_STARS = 20;
+const MAX_ROCKETS= 10;
 
 // Game variables
 let shootTimer = 10;
@@ -138,23 +37,25 @@ let xSpaceship = 0;
 let ySpaceship = 0;
 
 // Current enemies
-let spriteEnemies = new Array(3);
-let xEnemies = new Array(3);
-let yEnemies = new Array(3);
+let spriteEnemies = new Array(MAX_ENEMIES);
+let xEnemies = new Array(MAX_ENEMIES);
+let yEnemies = new Array(MAX_ENEMIES);
 
 // BG
-let spriteStars = [];
-let xStars = [];
-let yStars = [];
+let spriteStars = new Array(MAX_STARS);
+let xStars = new Array(MAX_STARS);
+let yStars = new Array(MAX_STARS);
 
 
 // List of possible enemy sprites
-let possibleEnemies = [gfxEnemy1,gfxEnemy2,gfxEnemy3];
+let possibleEnemies = new Array(MAX_ENEMIES);
 
 // Ingame rockets
-let xRockets = [];
-let yRockets = [];
-let spriteRockets = [];
+let xRockets = new Array(MAX_ROCKETS);
+let yRockets = new Array(MAX_ROCKETS);
+let spriteRockets = new Array(MAX_ROCKETS);
+let isAliveRocket = new Array(MAX_ROCKETS);
+isAliveRocket.fill(0);
 
 // User Score
 let score = 0;
@@ -171,214 +72,308 @@ let starsMovementTimer =0;
 
 // Setting up the game..
 game.setup(() => {
+  gfxJsShip= game.loadGraphics(`
+    ! node_invaders 16x9@#424242,#8BC34A,#F44336,#c2c3c7
+    ...###22222.....
+    .3####222222....
+    ...###2222222...
+    ..3#####222222..
+    33#######2222224
+    ..3#####222222..
+    ...###2222222...
+    .3####222222....
+    ...###22222.....
+    `);
 
-    generateStars(20);
-    score = 0;
 
-    //setup the spaceship initial position in the canvas
-    xSpaceship = 10;
-    ySpaceship = 32;
+  // Graphics
+  gfxEnemy1 = game.loadGraphics(`
+    ! sprite 13x9@#ffffff,#254fd6,#E024C6
+    ..22.........
+    .2222........
+    22..22......
+    22.....3...3.
+    22....333.333
+    22.....3...3.
+    22..22.......
+    .2222........
+    ..22.........
+    `);
 
-    // Pushing first wave  of enemies (3 enemies at the same time top)
-    spriteEnemies[0]=possibleEnemies[Math.floor(Math.random()*3)];
-    xEnemies[0]=(Math.floor(Math.random()*game.width+ game.width/2));
-    yEnemies[0]=(Math.floor(Math.random()*game.height));
+  // Graphics
+  gfxEnemy2 = game.loadGraphics(`
+    ! sprite 14x9@#7bbfff,#254fd6
+    ..............
+    .....#........
+    .##..#.....##.
+    #..#.###..#..#
+    #..#.#..#.#..#
+    ###..#..#.###.
+    #....#..#.#...
+    #.........#...
+    ..............
+    `);
 
-    spriteEnemies[1]=(possibleEnemies[Math.floor(Math.random()*3)]);
-    xEnemies[1]=(Math.floor(Math.random()*game.width+ game.width/2));
-    yEnemies[1]=(Math.floor(Math.random()*game.height));
+  gfxEnemy3= game.loadGraphics(`
+    ! sprite 9x10@#ffffff,#e76f00,#5382a1,#000000
+    ...2.....
+    ..2..2...
+    .2..2....
+    ..2..2...
+    .....4...
+    333333.3.
+    ........3
+    .33333.3.
+    .....4...
+    ..333....
+    `);
 
-    spriteEnemies[2]=(possibleEnemies[Math.floor(Math.random()*3)]);
-    xEnemies[2]=(Math.floor(Math.random()*game.width+ game.width/2));
-    yEnemies[2]=(Math.floor(Math.random()*game.height));
+  gfxEnemy4= game.loadGraphics(`
+    ! ruby 13x9@#ffffff,#e76f00,#5382a1,#000000
+    ...2.........
+    ..2..2.......
+    .2..2........
+    ..2..2.......
+    .....4.......
+    333333.3.....
+    ........3....
+    .33333.3.....
+    .....4.......
+    `);
 
-    // Starting game state
-    playing = false;
-    inIntro = true;
-    inScoreScreen = false;
-    introTimeout = 50;
-    scoreTimeout = 50;
+
+  gfxRocket = game.loadGraphics(`
+    ! node_invaders 5x1@#424242,#8BC34A,#F44336
+    33#######22
+    `);
+
+  gfxStar = game.loadGraphics(`
+    ! node_invaders 1x1@#616161,#8BC34A,#F44336
+    #
+    `);
+
+
+  gfxIntro = game.loadGraphics(`
+    ! intro 96x27@#c2c3c7,#88c34a,#424242,#f44336
+    .....................................................#..........................................
+    .....................................................##.........................................
+    .....................................................###........................................
+    .....................................................####.......................................
+    .....................................................####.......................................
+    .....................................................####.......................................
+    .........................###...........#.............####.......###.............................
+    ........................#####..........2.............####......#####............................
+    .......................#######........222........########.....#######...........................
+    ......................#########......22222......#########....#########..........................
+    .....................#####.#####....2222222....##########...#####.#####.........................
+    ....................#####...#####..222222222..#####.#####..#####...#####........................
+    ....................####.....####..222222222..####...####..####......###........................
+    ....................####.....####..222232222..###.....###..####..22...##........................
+    ....................####.....####..222333222..###.....###..####..22....#........................
+    ....................####.....####..222333222..####...####..#####................................
+    ....................###.......###..333333333..#####.#####...#####...............................
+    ....................##.........##..333333333...##########....######.............................
+    ....................#...........#..33.333.33....########......######............................
+    ....................................3.434.3......######........#####............................
+    ....................................4..4..4.....................................................
+    ................................................................................................
+    ..............................................2222.222..222.2..2.22222.2222.222..2..............
+    ..............................................2.....2..2....2..2...2...2....2..2.2..............
+    ..............................................222...2..2.22.2222...2...222..222..2..............
+    ..............................................2.....2..2..2.2..2...2...2....2.2.................
+    ..............................................2....222..22..2..2...2...2222.2..2.2..............
+    `);
+  possibleEnemies[0] = gfxEnemy1;
+  possibleEnemies[1] = gfxEnemy2;
+  possibleEnemies[2] = gfxEnemy3;
+  generateStars(MAX_STARS);
+  score = 0;
+
+  //setup the spaceship initial position in the canvas
+  xSpaceship = 10;
+  ySpaceship = 32;
+
+  // Pushing first wave  of enemies (3 enemies at the same time top)
+  spriteEnemies[0]=possibleEnemies[Math.floor(Math.random()*3)];
+  xEnemies[0]=(Math.floor(Math.random()*game.width+ game.width/2));
+  yEnemies[0]=(Math.floor(Math.random()*game.height));
+
+  spriteEnemies[1]=(possibleEnemies[Math.floor(Math.random()*3)]);
+  xEnemies[1]=(Math.floor(Math.random()*game.width+ game.width/2));
+  yEnemies[1]=(Math.floor(Math.random()*game.height));
+
+  spriteEnemies[2]=(possibleEnemies[Math.floor(Math.random()*3)]);
+  xEnemies[2]=(Math.floor(Math.random()*game.width+ game.width/2));
+  yEnemies[2]=(Math.floor(Math.random()*game.height));
+
+  // Starting game state
+  playing = false;
+  inIntro = true;
+  inScoreScreen = false;
+  introTimeout = 50;
+  scoreTimeout = 50;
 });
 
 function generateStars(amount){
-    for(let i =0; i<amount; i++){
-        spriteStars.push(gfxStar);
-        xStars.push(Math.floor(Math.random()*game.width));
-        yStars.push(Math.random()*game.height);
-    }
+  for(let i =0; i<amount; i++){
+    spriteStars[i] = (gfxStar);
+    xStars[i] = (Math.floor(Math.random()*game.width));
+    yStars[i] = (Math.random()*game.height);
+  }
 }
 
 // Main Loop!
 game.loop(() => {
-    game.clear();
-    // Drawing stars behind everything
-    updateStars();
+  game.clear();
+  // Drawing stars behind everything
 
-    // Checking game state..
-    if(introTimeout>0)introTimeout --;
-    if(inIntro){
-        game.drawImage(gfxIntro, 0,10);
-        game.drawText(`[A] to fight!`, 10, Math.floor(game.height/2) +20);
-        starsMovementTimer-=2;
-
-        if( game.buttonPressed('A') && introTimeout <= 0){
-            inIntro = false;
-            playing = true;
-        }
+  // Replaced Function UpdateStars()
+  for(let index = 0; index< spriteStars.length; index ++)
+  {
+    if(xStars[index]<=0)
+    {
+      xStars[index] = game.width;
+      yStars[index] = (Math.random()*game.height);
     }
-    else if(inScoreScreen){
-        if(scoreTimeout>0) scoreTimeout --;
-        game.drawText(`Final Score ${score}`, xOffset, Math.floor(game.height/2));
-        game.drawText(`[A] to restart!`, 10, Math.floor(game.height/2) + 20);
-        if( game.buttonPressed('A') && scoreTimeout <= 0){
-            game.reset();
-        }
+    if(starsMovementTimer<=0){
+      xStars[index]-=1
     }
-    else if(playing){
-        shootTimer-= 2;
-        game.drawImage(gfxJsShip, xSpaceship, ySpaceship);
+    game.drawImage(gfxStar,xStars[index],yStars[index]);
+  }
+  if(starsMovementTimer<=0){
+    starsMovementTimer=10;
+  };
 
-        // if the spaceship is inside the canvas height viewport handle up and down movements
-        if(ySpaceship > 0 && ySpaceship < game.height){
-            if ( game.buttonPressed('up')) {
-                ySpaceship -= 1;
-                if(ySpaceship<= 0)
-                    ySpaceship = 1;
-            }else if( game.buttonPressed('down') ){
-                ySpaceship += 1;
-                if(ySpaceship>= game.height)
-                    ySpaceship = game.height-1;
-            }
+  // Checking game state..
+  if(introTimeout>0)introTimeout --;
+  if(inIntro){
+    game.drawImage(gfxIntro, 0,10);
+    game.drawText(`[A] to fight!`, 10, Math.floor(game.height/2) +20);
+    starsMovementTimer-=2;
+
+    if( game.buttonPressed('space') && introTimeout <= 0){
+      inIntro = false;
+      playing = true;
+    }
+  }
+  else if(inScoreScreen){
+    if(scoreTimeout>0) scoreTimeout --;
+    game.drawText(`Final Score ${score}`, xOffset, Math.floor(game.height/2));
+    game.drawText(`[A] to restart!`, 10, Math.floor(game.height/2) + 20);
+    if( game.buttonPressed('space') && scoreTimeout <= 0){
+      game.reset();
+    }
+  }
+  else if(playing){
+    shootTimer-= 2;
+    game.drawImage(gfxJsShip, xSpaceship, ySpaceship);
+
+    // if the spaceship is inside the canvas height viewport handle up and down movements
+    if(ySpaceship > 0 && ySpaceship < game.height){
+      if ( game.buttonPressed('up')) {
+        ySpaceship -= 1;
+        if(ySpaceship<= 0)
+          ySpaceship = 1;
+      }else if( game.buttonPressed('down') ){
+        ySpaceship += 1;
+        if(ySpaceship>= game.height)
+          ySpaceship = game.height-1;
+      }
+    }
+
+    if(game.buttonPressed('space') && shootTimer <=0 ){
+      shoot();
+      shootTimer= 30;
+    }
+
+    //check if spaceship crashed
+    for(let idx = 0; idx< spriteEnemies.length; idx ++)
+    {
+      let crash = false;
+      let enemySprite = spriteEnemies[idx];
+      // This is 100% hacky, to catch a few frames where gfxJsShip is undefined for some reason
+      if(gfxJsShip){
+        if(enemySprite === gfxEnemy1)
+          crash = game.detectCollision(gfxJsShip, xSpaceship, ySpaceship,gfxEnemy1, xEnemies[idx], yEnemies[idx], true);
+        else if(enemySprite === gfxEnemy2)
+          crash = game.detectCollision(gfxJsShip, xSpaceship, ySpaceship,gfxEnemy2, xEnemies[idx], yEnemies[idx], true);
+        else if(enemySprite === gfxEnemy3)
+          crash = game.detectCollision(gfxJsShip, xSpaceship, ySpaceship,gfxEnemy3, xEnemies[idx], yEnemies[idx], true);
+      }
+      if(crash){gameOver();}
+
+      for(let rckIdx = 0; rckIdx<spriteRockets.length; rckIdx++)
+      {
+        if(isAliveRocket[rckIdx]) {
+          let isDead = false;
+          if(enemySprite === gfxEnemy1)
+            isDead = game.detectCollision(gfxRocket, xRockets[rckIdx], yRockets[rckIdx], gfxEnemy1, xEnemies[idx], yEnemies[idx], true);
+          else if(enemySprite === gfxEnemy2)
+            isDead = game.detectCollision(gfxRocket, xRockets[rckIdx], yRockets[rckIdx], gfxEnemy2, xEnemies[idx], yEnemies[idx], true);
+          else if(enemySprite === gfxEnemy3)
+            isDead = game.detectCollision(gfxRocket, xRockets[rckIdx], yRockets[rckIdx], gfxEnemy3, xEnemies[idx], yEnemies[idx], true);
+          console.log(isDead);
+          if (isDead) {
+            xEnemies[idx] = game.width;
+            isAliveRocket[rckIdx] = 0;
+            spriteEnemies[idx] = (possibleEnemies[Math.floor(Math.random() * 3)]);
+            yEnemies[idx] = (Math.floor(Math.random() * game.height));
+            score++;
+          }
         }
-
-        if(game.buttonPressed('space') && shootTimer <=0 ){
-            shoot();
-            shootTimer= 30;
-        }
-
-        //check if spaceship crashed
-        spriteEnemies.forEach((enemySprite,idx) => {
-
-            let crash = game.detectCollision(gfxJsShip, xSpaceship, ySpaceship,enemySprite, xEnemies[idx], yEnemies[idx], true);
-            if(crash){
-                spriteEnemies.splice(idx,1);
-                xEnemies.splice(idx,1);
-                yEnemies.splice(idx,1);
-                gameOver();
-            }
-
-            spriteRockets.forEach((rocketSprite, rckIdx)=>{
-
-                let isDead = game.detectCollision(rocketSprite, xRockets[rckIdx], yRockets[rckIdx], enemySprite, xEnemies[idx], yEnemies[idx], true);
-                console.log(isDead);
-                if(isDead){
-                    spriteEnemies.splice(idx,1);
-                    xEnemies.splice(idx,1);
-                    yEnemies.splice(idx,1);
-
-                    spriteEnemies.push(possibleEnemies[Math.floor(Math.random()*3)]);
-                    xEnemies.push(game.width);
-                    yEnemies.push(Math.floor(Math.random()*game.height));    
-
-                    score++;
-                }
-            })
-
-        });
-        starsMovementTimer--;
-        updateEnemies();
-        updateRockets();
-        game.drawText(`Score ${score}`, 0, 0);
-
+      }
 
     }
+    starsMovementTimer--;
+
+    // Replaced Function UpdateEnemies()
+    for(let index = 0; index< spriteEnemies.length; index ++)
+    {
+      let enemySprite = spriteEnemies[index];
+      if(xEnemies[index]<=0)
+      {
+        xEnemies[index] = game.width;
+        spriteEnemies[index] = (possibleEnemies[Math.floor(Math.random()*3)]);
+        yEnemies[index]=(Math.floor(Math.random()*game.height));
+      }
+      xEnemies[index]-=1;
+      if(enemySprite === gfxEnemy1)
+        game.drawImage(gfxEnemy1,xEnemies[index], yEnemies[index]);
+      else if(enemySprite === gfxEnemy2)
+        game.drawImage(gfxEnemy1,xEnemies[index], yEnemies[index]);
+      else if(enemySprite === gfxEnemy3)
+        game.drawImage(gfxEnemy1,xEnemies[index], yEnemies[index]);
+    }
+
+    // Replaced Function UpdateRockets()
+    for(let index = 0; index<spriteRockets.length; index++)
+    {
+      if(isAliveRocket[index]){
+        if(xRockets[index]>=game.width)
+          isAliveRocket[index] = 0;
+        else {
+          xRockets[index] += 1;
+          game.drawImage(gfxRocket, xRockets[index], yRockets[index]);
+        }
+      }
+    }
+    game.drawText(`Score ${score}`, 0, 0);
+  }
 });
 
 // On spacebar press
 function shoot(){
-    console.log(game.height);
-    spriteRockets.push(gfxRocket);
-    xRockets.push(xSpaceship+14);
-    yRockets.push(ySpaceship+4);
+  let idx=0; // isAliveRocket.findIndex((isNAlv)=> isNAlv ==0 );
+  while(isAliveRocket[idx] && idx< isAliveRocket.length) idx++;
+  spriteRockets[idx] = (gfxRocket);
+  xRockets[idx] = (xSpaceship+14);
+  yRockets[idx] = (ySpaceship+4);
+  isAliveRocket[idx] = 1;
 }
 
 // Handle game over
 function gameOver(){
-    game.clear();
-    spriteEnemies = [];
-    xEnemies = [];
-    yEnemies = [];
-
-    spriteRockets =[];
-    xRockets =[];
-    yRockets =[];
-
-    spriteStars =[];
-    xStars =[];
-    yStars =[];
-
-    playing = false;
-    inScoreScreen = true;
-}
-
-// Update enemies positions
-function updateEnemies(){
-    spriteEnemies
-        .forEach((enemySprite,index)=>{
-            if(xEnemies[index]<=0)
-            {
-                xEnemies[index] = game.width;
-                spriteEnemies.splice(index,1);
-                xEnemies.splice(index,1);
-                yEnemies.splice(index,1);
-
-                spriteEnemies.push(possibleEnemies[Math.floor(Math.random()*3)]);
-                xEnemies.push(game.width);
-                yEnemies.push(Math.floor(Math.random()*game.height));    
-
-            }
-            xEnemies[index]-=1;
-            game.drawImage(enemySprite,xEnemies[index], yEnemies[index]);
-        });
-}
-
-// Update enemies positions
-function updateStars(){
-    spriteStars
-        .forEach((starSprite,index)=>{
-            if(xStars[index]<=0)
-            {
-                xStars[index] = game.width;
-                spriteStars.splice(index,1);
-                xStars.splice(index,1);
-                yStars.splice(index,1);
-
-                spriteStars.push(gfxStar);
-                xStars.push(game.width);
-                yStars.push(Math.random()*game.height);
-            }
-            if(starsMovementTimer<=0){
-                xStars[index]-=1
-            }
-            game.drawImage(starSprite,xStars[index],yStars[index]);
-        });
-    if(starsMovementTimer<=0){
-        starsMovementTimer=10;
-    };
-}
-
-
-// Update rockets positions
-function updateRockets(){
-    spriteRockets
-        .forEach((rocketSprite,index)=>{
-            if(xRockets[index]>=game.width)
-            {
-                spriteRockets.splice(index,1);
-                xRockets.splice(index,1);
-                yRockets.splice(index,1);
-            }
-            xRockets[index]+=1;
-            game.drawImage(rocketSprite,xRockets[index],yRockets[index]);
-        });
+  game.clear();
+  playing = false;
+  inScoreScreen = true;
 }
